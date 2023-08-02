@@ -38,7 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <raylib.h>
 
-#include "winfix.h"
+#include "clockfix.h"
 #include "game.h"
 #include "graphics.h"
 #include "audio.h"
@@ -211,6 +211,10 @@ void Game_SpawnPuppet(void)
 {
     marionette_active = true;
     ai_marionette.sprite = marionette;
+
+    for(int i = 0; i < 6; i++) {
+        visited_rooms[i] = false;
+    }
 }
 
 //
@@ -301,6 +305,9 @@ void Game_SpawnPurpleGuy(void)
 //
 void Game_PurpleGuyUpdate(void)
 {
+    if (purple_guy_active == false)
+        return;
+
     Graphics_DrawSprite(ai_killer.sprite, ai_killer.origin.x, ai_killer.origin.y, false);
     ai_killer.origin.y = player.origin.y - 20;
     ai_killer.origin.x -= 2;
@@ -415,8 +422,8 @@ void Game_PlayerIsInNewRoom(unsigned char dir)
     if (dir == 3) {
         int purple_guy = rand() % 100;
 
-        // 4% chance, actual rate is undocumented.
-        if (purple_guy >= 96) {
+        // 6% chance, actual rate is undocumented.
+        if (purple_guy >= 94) {
             Game_SpawnPurpleGuy();
         }
     }
@@ -518,7 +525,18 @@ void Game_ScreenUpdate(bool blue)
             game_state = GAMESTATE_GAMEPLAY;
             PlaySound(loop);
         } else {
+
+#ifndef PLATFORM_WEB
+
             CloseWindow();
+
+#else
+
+            // Quick hack to re-start the game on WEB
+            Game_Init();
+
+#endif // PLATFORM_WEB
+
         }
 
         screen_init = false;
@@ -579,7 +597,9 @@ void Game_Init(void)
 {
     // Start "SAVETHEM" speech at "S"
     letter = 0;
+    close_after_state = false;
     game_state = GAMESTATE_REDSCREEN;
+    purple_guy_active = false;
 
     ai_mangle.sprite = mangle_0;
 

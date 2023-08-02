@@ -36,7 +36,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <raylib.h>
 
-#include "winfix.h"
+#include "clockfix.h"
 #include "player.h"
 #include "game.h"
 #include "rooms.h"
@@ -162,9 +162,9 @@ bool Player_FixCollisions(unsigned char dir)
         right_plr >= left_obj && left_plr <= right_obj) {
             switch (dir) {
                 case 0: player.origin.y -= 0.5; break;
-                case 1: player.origin.x += 0.5; break;
+                case 1: player.origin.x += 0.55; break;
                 case 2: player.origin.y += 0.5; break;
-                case 3: player.origin.x -= 0.5; break;
+                case 3: player.origin.x -= 0.55; break;
             }
 
             // If this collision box is set to end the game, do that
@@ -212,14 +212,14 @@ void Player_Update(void)
     // Left
     if (IsKeyDown(KEY_A)) {
         dir = 1;
-        player.origin.x -= 0.5;
+        player.origin.x -= 0.55;
 
         Player_FixCollisions(dir);
     } 
     // Right
     else if (IsKeyDown(KEY_D)) {
         dir = 3;
-        player.origin.x += 0.5;
+        player.origin.x += 0.55;
 
         Player_FixCollisions(dir);
     }

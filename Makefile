@@ -24,6 +24,13 @@ OUTPUT_NORMAL  := `tput sgr0`
 
 #-------------------------------------------------
 
+# Emscripten, web
+ifeq ($(PLATFORM),WEB)
+CFLAGS 		   += -DPLATFORM_WEB -s USE_GLFW=3 -sALLOW_MEMORY_GROWTH --preload-file assets
+NAME 		   := $(NAME).js
+CC 			   := emcc
+endif
+
 # Linux, 32-bit
 ifeq ($(PLATFORM),LINUX32)
 CFLAGS         += -m32

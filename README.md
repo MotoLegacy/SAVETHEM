@@ -29,6 +29,7 @@ The source code for SAVETHEM is licensed under the [MIT License](LICENSE). Game 
 
 Building is done via a Linux environment, utilizing cross-compilation. The following cross-platforms are supported by the `Makefile`:
 ```
+WEB       : WASM/HTML5 (emscripten)
 WINDOWS32 : 32-bit Windows (mingw)
 WINDOWS64 : 64-bit Windows (mingw)
 LINUX32   : 32-bit Linux (native, -m32)

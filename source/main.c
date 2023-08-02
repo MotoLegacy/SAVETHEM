@@ -35,6 +35,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <raylib.h>
 
+#ifdef PLATFORM_WEB
+#include <emscripten/emscripten.h>
+#endif // PLATFORM_WEB
+
 #include "graphics.h"
 #include "player.h"
 #include "audio.h"
@@ -43,6 +47,35 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define WINDOW_TITLE                "SAVETHEM"
 
 int frame_counter;
+
+//
+// RunFrame()
+// Now abstracted out of main(),
+// for web support.
+//
+static void RunFrame(void)
+{
+    // Start of Draw
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    // Game Update Loop
+    Game_Update();
+
+    // Draw some lines over the game.
+    Graphics_DrawScanLines();
+
+    // And some static, if permitted
+    if (game_state == GAMESTATE_GAMEPLAY)
+        Graphics_DrawStatic();
+
+    if (draw_you_cant == true)
+        Graphics_DrawYouCant();
+
+    frame_counter++; 
+        
+    EndDrawing();
+}
 
 int main(void)
 {
@@ -53,7 +86,12 @@ int main(void)
 
     InitAudioDevice();
     SetMasterVolume(0.80f);
+
+#ifndef PLATFORM_WEB
+
     SetTargetFPS(60);
+
+#endif // PLATFORM_WEB
 
     // Initalize our graphics and audio into memory
     int res;
@@ -78,33 +116,37 @@ int main(void)
     Game_Init();
     Player_Init();
 
+#ifdef PLATFORM_WEB
+
+    emscripten_set_main_loop(RunFrame, 60, 1);
+
+#else
+
     // Run until we return that the window can close
     // (or the exit window event, ha).
     while (!WindowShouldClose()) {
-        // Start of Draw
-        BeginDrawing();
-        ClearBackground(BLACK);
-
-        // Game Update Loop
-        Game_Update();
-
-        // Draw some lines over the game.
-        Graphics_DrawScanLines();
-
-        // And some static, if permitted
-        if (game_state == GAMESTATE_GAMEPLAY)
-            Graphics_DrawStatic();
-
-        if (draw_you_cant == true)
-            Graphics_DrawYouCant();
-
-        frame_counter++; 
-        
-        EndDrawing();
+        RunFrame();
     }
 
+#endif // PLATFORM_WEB
+
 exit:
+    // Unload assets
+    UnloadSound(speak_s);
+    UnloadSound(speak_a);
+    UnloadSound(speak_v);
+    UnloadSound(speak_e);
+    UnloadSound(speak_t_);
+    UnloadSound(speak_h);
+    UnloadSound(speak_m);
+    UnloadSound(error);
+    UnloadSound(loop);
+    UnloadTexture(sheet_0);
+    UnloadTexture(sheet_1);
+    UnloadTexture(_static);
+
     // you can't.
+    CloseAudioDevice();
     CloseWindow();
     return 0;
 }

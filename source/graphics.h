@@ -57,4 +57,8 @@ extern sprite_t player_1;
 extern sprite_t player_eyes_0;
 extern sprite_t player_eyes_1;
 
+extern Texture2D sheet_0;
+extern Texture2D sheet_1;
+extern Texture2D _static;
+
 #endif // _GRAPHICS_H_
